@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-f30r3nw5t1*@txt8ak6wk4d*=1hl&-b!&e#*k3+#uqavdw^oq!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +67,14 @@ TEMPLATES = [
         },
     },
 ]
+
+# REST_FRAMEWORK
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
