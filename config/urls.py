@@ -16,13 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from core.views import healthcheck, version
+from core.views import HealthCheckView, VersionView, PingView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 urlpatterns = [
     # API Health Check
-    path('api/healthcheck/', healthcheck, name='healthcheck'),
-    path('api/version/', version, name='version'),
-    
+    path('api/healthcheck/', HealthCheckView.as_view(), name='healthcheck'),
+    path('api/version/', VersionView.as_view(), name='version'),
+    path('api/ping/', PingView.as_view(), name='ping'),
+
+    # API Schema Documentation
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc-ui'),
+
     # Admin
     path('admin/', admin.site.urls),
 ]
