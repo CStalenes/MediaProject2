@@ -75,6 +75,13 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Media Project API',
+    'DESCRIPTION': 'API for media project',
+    'VERSION': '0.0.1',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
