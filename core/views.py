@@ -1,8 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
-from .serializers import PingSerializer, HealthCheckSerializer, VersionSerializer
-from rest_framework import status
+
+from .serializers import (
+    PingSerializer, 
+    HealthCheckSerializer, 
+    VersionSerializer,
+)
+
+# ============ CORE ENDPOINTS ============
 
 class HealthCheckView(APIView):
     @extend_schema(
@@ -35,3 +41,4 @@ class PingView(APIView):
     )
     def get(self, request):
         return Response({"message": "pong"}, status=status.HTTP_200_OK)
+
