@@ -28,7 +28,7 @@ WORKDIR /app
 #Fixe entrypoint
 ENTRYPOINT ["python"]
 
-CMD ["manage.py", "runserver", "0.0.0.0:8050"]
+CMD ["manage.py", "runserver", "0.0.0.0:8055"]
 
-EXPOSE 8050 
+EXPOSE 8055 
 
