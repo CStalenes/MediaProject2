@@ -14,3 +14,11 @@ static/
 *.png
 *.gif
 
+# ============================================================================
+# DOCKER
+# ============================================================================
+#docker-compose.override.yml
+#docker-compose.yml
+#Dockerfile
+#.dockerignore
+#docker_ressources/
