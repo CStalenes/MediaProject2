@@ -191,10 +191,9 @@ class MediaJob(models.Model):
         auto_now=True,
         verbose_name='Date de mise à jour'
     )
-    # Meta class pour la table MediaJobs
     class Meta:
-        db_table = 'MediaJobs',
-        ordering = ['-created_at'],
+        db_table = 'MediaJobs'
+        ordering = ['-created_at']
         indexes = [
             models.Index(fields=['media']),
             models.Index(fields=['status']),
@@ -227,4 +226,177 @@ class MediaJob(models.Model):
         self.status = 'failed'
         self.completed_at = timezone.now()
         self.error_message = error_message
+        self.save()
+
+
+class HttpUrl(models.Model):
+    """
+    Modèle pour stocker et gérer les URLs HTTP avec métadonnées
+    Utile pour tracer les URLs de ressources externes, liens de médias, etc.
+    """
+    URL_TYPE_CHOICES = [
+        ('media', 'Média'),
+        ('thumbnail', 'Miniature'),
+        ('external', 'Externe'),
+        ('api', 'API'),
+        ('webhook', 'Webhook'),
+        ('redirect', 'Redirection'),
+        ('other', 'Autre'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('active', 'Actif'),
+        ('inactive', 'Inactif'),
+        ('expired', 'Expiré'),
+        ('broken', 'Cassé'),
+        ('pending', 'En attente'),
+    ]
+    
+    uuid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    
+    # URL principale
+    url = models.URLField(
+        max_length=2000,
+        unique=True,
+        help_text='URL HTTP complète'
+    )
+    
+    # Métadonnées
+    url_type = models.CharField(
+        max_length=50,
+        choices=URL_TYPE_CHOICES,
+        default='other',
+        help_text='Type d\'URL'
+    )
+    
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='active',
+        help_text='Statut de l\'URL'
+    )
+    
+    # Relations optionnelles
+    media = models.ForeignKey(
+        Media,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='http_urls',
+        help_text='Média associé à cette URL (optionnel)'
+    )
+    
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_urls',
+        help_text='Utilisateur qui a créé cette URL'
+    )
+    
+    # Informations HTTP
+    http_method = models.CharField(
+        max_length=10,
+        default='GET',
+        help_text='Méthode HTTP (GET, POST, PUT, DELETE, etc.)'
+    )
+    
+    status_code = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='Code de statut HTTP de la dernière vérification (200, 404, etc.)'
+    )
+    
+    last_checked_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='Date de la dernière vérification de l\'URL'
+    )
+    
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='Date d\'expiration de l\'URL (si applicable)'
+    )
+    
+    # Métadonnées supplémentaires
+    title = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text='Titre ou description de l\'URL'
+    )
+    
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text='Description détaillée de l\'URL'
+    )
+    
+    tags = models.JSONField(
+        default=list,
+        blank=True,
+        help_text='Tags associés à l\'URL (liste JSON)'
+    )
+    
+    metadata = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text='Métadonnées supplémentaires (JSON)'
+    )
+    
+    # Timestamps
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+    
+    class Meta:
+        db_table = 'HttpUrls'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['url']),
+            models.Index(fields=['url_type']),
+            models.Index(fields=['status']),
+            models.Index(fields=['media']),
+            models.Index(fields=['created_by']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['expires_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.url} ({self.get_url_type_display()})"
+    
+    def is_expired(self):
+        """Vérifier si l'URL est expirée"""
+        if self.expires_at:
+            from django.utils import timezone
+            return timezone.now() > self.expires_at
+        return False
+    
+    def is_active(self):
+        """Vérifier si l'URL est active"""
+        return self.status == 'active' and not self.is_expired()
+    
+    def mark_as_checked(self, status_code=None):
+        """Marquer l'URL comme vérifiée"""
+        from django.utils import timezone
+        self.last_checked_at = timezone.now()
+        if status_code is not None:
+            self.status_code = status_code
+            # Mettre à jour le statut selon le code HTTP
+            if status_code >= 200 and status_code < 300:
+                self.status = 'active'
+            elif status_code == 404:
+                self.status = 'broken'
+            else:
+                self.status = 'inactive'
         self.save()

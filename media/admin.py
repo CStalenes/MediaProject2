@@ -1,5 +1,5 @@
 from django.contrib import admin
-from media.models import Media, MediaJob
+from media.models import Media, MediaJob, HttpUrl
 
 
 @admin.register(Media)
@@ -85,3 +85,60 @@ class MediaJobAdmin(admin.ModelAdmin):
             'fields': ('created_at', 'updated_at')
         }),
     )
+
+
+@admin.register(HttpUrl)
+class HttpUrlAdmin(admin.ModelAdmin):
+    """Configuration de l'admin pour le modèle HttpUrl"""
+    list_display = [
+        'url',
+        'url_type',
+        'status',
+        'status_code',
+        'media',
+        'created_by',
+        'expires_at',
+        'last_checked_at',
+        'created_at'
+    ]
+    list_filter = ['url_type', 'status', 'http_method', 'created_at', 'expires_at']
+    search_fields = [
+        'url',
+        'title',
+        'description',
+        'media__original_filename',
+        'created_by__username',
+        'created_by__email'
+    ]
+    readonly_fields = [
+        'uuid',
+        'created_at',
+        'updated_at',
+        'last_checked_at',
+        'status_code'
+    ]
+    ordering = ['-created_at']
+    
+    fieldsets = (
+        ('URL', {
+            'fields': ('uuid', 'url', 'url_type', 'status', 'title', 'description')
+        }),
+        ('Relations', {
+            'fields': ('media', 'created_by')
+        }),
+        ('Informations HTTP', {
+            'fields': ('http_method', 'status_code', 'last_checked_at', 'expires_at')
+        }),
+        ('Métadonnées', {
+            'fields': ('tags', 'metadata'),
+            'classes': ('collapse',)
+        }),
+        ('Dates', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+    
+    def get_queryset(self, request):
+        """Optimiser les requêtes avec select_related"""
+        qs = super().get_queryset(request)
+        return qs.select_related('media', 'created_by')
