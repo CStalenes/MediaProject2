@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/version/', VersionView.as_view(), name='version'),
     path('api/ping/', PingView.as_view(), name='ping'),
 
+
     # Include media app URLs
     path('api/', include('media.urls')),
 
@@ -36,6 +37,7 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc-ui'),
+
 
     # Admin
     path('admin/', admin.site.urls),
