@@ -147,7 +147,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model
-#AUTH_USER_MODEL = 'core.User'
+# IMPORTANT: Décommentez cette ligne pour utiliser le modèle User personnalisé
+# Si vous avez déjà des migrations, vous devrez peut-être supprimer la DB et recréer les migrations
+AUTH_USER_MODEL = 'core.User'
 
 # ============ IMAGEKIT SETTINGS ============
 # Récupérez vos credentials sur: https://imagekit.io/dashboard/developer/api-keys

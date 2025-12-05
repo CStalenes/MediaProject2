@@ -19,7 +19,11 @@ build/
 # UPLOADS & MEDIA
 # ============================================================================
 uploads/
-media/
+# Ignorer les fichiers uploadés (dossier pour les fichiers statiques/uploads)
+# Mais NE PAS ignorer l'application Django media/
+/media/
+# Exclure l'application Django media/ du pattern ci-dessus
+!/media/
 static/
 *.jpg
 *.jpeg

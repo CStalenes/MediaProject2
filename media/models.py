@@ -191,12 +191,10 @@ class MediaJob(models.Model):
         auto_now=True,
         verbose_name='Date de mise à jour'
     )
-    
+    # Meta class pour la table MediaJobs
     class Meta:
-        db_table = 'MediaJobs'
-        verbose_name = 'Job média'
-        verbose_name_plural = 'Jobs médias'
-        ordering = ['-created_at']
+        db_table = 'MediaJobs',
+        ordering = ['-created_at'],
         indexes = [
             models.Index(fields=['media']),
             models.Index(fields=['status']),
