@@ -146,6 +146,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Custom User Model
+#AUTH_USER_MODEL = 'core.User'
+
 # ============ IMAGEKIT SETTINGS ============
 # Récupérez vos credentials sur: https://imagekit.io/dashboard/developer/api-keys
 IMAGEKIT_API_KEY = os.getenv('IMAGEKIT_API_KEY', '')
